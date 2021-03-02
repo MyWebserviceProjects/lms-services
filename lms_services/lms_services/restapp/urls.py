@@ -20,6 +20,7 @@ from django.urls import include
 from django.views.generic import RedirectView
 from lms_services.restapp import views
 from lms_services.restapp import views_authentication
+from rest_framework.documentation import include_docs_urls
 urlpatterns = [
     path('users/', views.UserList.as_view()),
     path('users/<int:pk>/', views.UserDetail.as_view()),
@@ -51,5 +52,5 @@ urlpatterns = [
     path('core/sessions/<int:pk>/', views.CourseSessionDetail.as_view()), #details view - edit by logged in user
 
     url(r'core/enrolledsessions', views.EnrolledSessionFilterList.as_view()), #list view - all sessions (with/without filters)
-
+    path(r'docs/', include_docs_urls(title='LMS API')),
 ]
