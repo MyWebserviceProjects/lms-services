@@ -30,7 +30,7 @@ class StudentSerializer(serializers.ModelSerializer):
         #fields = ['id','name','group','password','dob',  'address', 'city', 'pin', 'email','phone']
         fields = ['id','name','password','dob',  'address', 'city', 'pin', 'email','phone']
 
-        #extra_kwargs = {'password': {'write_only': True}}
+        extra_kwargs = {'password': {'write_only': True}}
 class FacultySerializer(serializers.ModelSerializer):
     #user_group = serializers.ReadOnlyField(source = 'user.groups',many=True,read_only=True,)
     #user_firstname = serializers.ReadOnlyField(source = 'user.first_name')
@@ -42,7 +42,7 @@ class FacultySerializer(serializers.ModelSerializer):
         #fields = ['id','user_firstname','user_lastname','user_email','dob', 'education', 'address', 'city', 'pin', 'phone1','phone2']
         #fields = ['id','name','group','password','dob',  'address', 'city', 'pin', 'email','phone']
         fields = ['id','name','password','dob',  'address', 'city', 'pin', 'email','phone']
-        #extra_kwargs = {'password': {'write_only': True}}
+        extra_kwargs = {'password': {'write_only': True}}
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category

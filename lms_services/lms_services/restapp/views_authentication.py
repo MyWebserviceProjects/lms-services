@@ -57,7 +57,9 @@ def register(request):
 def login(request):
 	print("login start")
 	if request.method == 'POST':
+		#print(request)
 		user_data = JSONParser().parse(request)
+		#print(user_data)
 		user_email = user_data['email']
 		user_password = user_data['password']
 		user_role = user_data['role']		

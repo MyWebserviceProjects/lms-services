@@ -20,6 +20,14 @@ from django.views.generic import RedirectView
 from rest_framework import routers
 from lms_services.restapp import views
 from django.conf.urls import url
+from rest_framework.schemas import get_schema_view
+
+from rest_framework_swagger.renderers import SwaggerUIRenderer, OpenAPIRenderer
+
+from rest_framework_swagger.views import get_swagger_view
+schema_view = get_swagger_view(title='Demo Swagger API')
+#schema_view = get_schema_view(title='Users API', renderer_classes=[OpenAPIRenderer, SwaggerUIRenderer])
+
 router = routers.DefaultRouter()
 #router.register(r'users', views.UserViewSet)
 #router.register(r'groups', views.GroupViewSet)
@@ -35,5 +43,8 @@ urlpatterns = [
     #path('', RedirectView.as_view(url='core/', permanent=True)),
     path('accounts/',include('django.contrib.auth.urls')),
     path('api/core/', include('rest_framework.urls')),
+    #url(r'^', schema_view, name="docs"),
     #url(r'^get-token/', obtain_auth_token), # Add this line
+    url(r'^swagger/', schema_view),
+    
 ]

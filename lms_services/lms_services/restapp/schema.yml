@@ -1,0 +1,58 @@
+info:
+  description: ''
+  title: ''
+  version: ''
+openapi: 3.0.0
+paths:
+  /api/groups/:
+    get:
+      operationId: groups_list
+      parameters:
+      - in: query
+        name: page
+        schema:
+          description: A page number within the paginated result set.
+          title: Page
+          type: integer
+      tags:
+      - groups
+  /api/groups/{id}/:
+    get:
+      operationId: groups_read
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          description: A unique integer value identifying this group.
+          title: ID
+          type: integer
+      tags:
+      - groups
+  /api/users/:
+    get:
+      operationId: users_list
+      parameters:
+      - in: query
+        name: page
+        schema:
+          description: A page number within the paginated result set.
+          title: Page
+          type: integer
+      tags:
+      - users
+  /api/users/{id}/:
+    get:
+      operationId: users_read
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          description: A unique integer value identifying this user.
+          title: ID
+          type: integer
+      tags:
+      - users
+servers:
+- url: ''
