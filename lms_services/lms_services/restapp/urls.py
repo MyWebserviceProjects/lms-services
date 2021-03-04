@@ -43,8 +43,11 @@ urlpatterns = [
     
     path('core/mysessions/', views.MyCourseSessionList.as_view()), #list view- sessions taken by logged in faculties
 
-    path('core/myenrolledsessions/', views.EnrolledSessionList.as_view()), #list view- enrolled sessions of logged in student
-    path('core/myenrolledsessions/<int:pk>/', views.EnrolledSessionDetail.as_view()), #details view- enrolled sessions of logged in student
+    path('core/enrolledsessions/', views.EnrolledSession.as_view()), #list view - all sessions (with/without filters)
+    path('core/enrolledsessions/<int:pk>/', views.EnrolledSessionDetail.as_view()), #list view - all sessions (with/without filters)
+    
+    path('core/myenrolledsessions/', views.MyEnrolledSessionList.as_view()), #list view- enrolled sessions of logged in student
+    path('core/myenrolledsessions/<int:pk>/', views.MyEnrolledSessionDetail.as_view()), #details view- enrolled sessions of logged in student
     
     path('authentication/registration/', views_authentication.register), #user registration
     path('authentication/login/', views_authentication.login),
@@ -53,7 +56,7 @@ urlpatterns = [
     path('core/sessions/', views.CourseSessionFilterList.as_view()), #list view - all sessions (with/without filters)
     path('core/sessions/<int:pk>/', views.CourseSessionDetail.as_view()), #details view - edit by logged in user
 
-    url(r'core/enrolledsessions', views.EnrolledSessionFilterList.as_view()), #list view - all sessions (with/without filters)
+
     path(r'docs/', include_docs_urls(title='LMS API')),
     
 

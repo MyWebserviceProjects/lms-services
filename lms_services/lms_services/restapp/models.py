@@ -12,7 +12,7 @@ class Student(models.Model):
     #group = models.ForeignKey('auth.Group', related_name='students', null=True,on_delete=models.CASCADE)
     dob = models.DateField(blank=True,null=True,help_text='Enter you DOB')
     phone = models.CharField(max_length=10, blank=True)
-    email = models.EmailField(max_length=200,blank=False, default='')
+    email = models.EmailField(max_length=200,blank=False,unique=True,default='')
     password = models.CharField(max_length=200,blank=False, default='')
     address = models.CharField(max_length=200,blank=True, default='')
     city = models.CharField(max_length=200,blank=True, default='')
@@ -32,7 +32,7 @@ class Faculty(models.Model):
     #group = models.ForeignKey('auth.Group', related_name='faculties', null=True,on_delete=models.CASCADE)
     dob = models.DateField(blank=True,null=True,help_text='Enter you DOB')
     phone = models.CharField(max_length=10,blank=True)
-    email = models.EmailField(max_length=200,blank=False, default='')
+    email = models.EmailField(max_length=200,blank=False,unique=True, default='')
     password = models.CharField(max_length=200,blank=False, default='')
     address = models.CharField(max_length=200,blank=True, default='')
     city = models.CharField(max_length=200,blank=True, default='')
@@ -47,7 +47,7 @@ class Faculty(models.Model):
         return self.name
     
 class Category(models.Model):
-    name= models.CharField(max_length=200, help_text='Enter Category Name')
+    name= models.CharField(max_length=200, unique=True,help_text='Enter Category Name')
     class Meta:
         ordering = ['id']
     def get_absolute_url(self):
@@ -60,7 +60,7 @@ class Category(models.Model):
 
 class Course(models.Model):
     category = models.ForeignKey('Category',on_delete=models.CASCADE, help_text='Enter Category')
-    name=models.CharField(max_length=200, help_text='Enter course name')
+    name=models.CharField(max_length=200,unique=True, help_text='Enter course name')
     credit=models.IntegerField(validators=[MaxValueValidator(10),MinValueValidator(1)],help_text='Enter credit score')
     duration=models.IntegerField(validators=[MinValueValidator(1)],help_text='Enter course duration')
     owner = models.ForeignKey('auth.User', related_name='courses_created', null=True,on_delete=models.CASCADE)
