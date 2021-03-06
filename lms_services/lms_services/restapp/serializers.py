@@ -55,11 +55,39 @@ class CourseSerializer(serializers.ModelSerializer):
 class CourseSessionSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
     class Meta:
-        model = Course_Session
-        fields = ('id','course','taken_by','tot_seats','rem_seats','start_date','end_date','owner')
-class EnrolledSessionSerializer(serializers.ModelSerializer):
+         model = Course_Session
+         fields = ('id','course','taken_by','tot_seats','rem_seats','start_date','end_date','owner')
+class CourseSessionSerializerForView(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
+    courseid = serializers.ReadOnlyField(source = 'course.id')
+    coursename = serializers.ReadOnlyField(source = 'course.name')
+    credit = serializers.ReadOnlyField(source = 'course.credit')
+    duration = serializers.ReadOnlyField(source = 'course.duration')
+    takenby=serializers.ReadOnlyField(source = 'taken_by.name')
+    category = serializers.ReadOnlyField(source = 'course.category.name')
+    class Meta:
+        model = Course_Session
+        fields = ('id','courseid','coursename','category','credit','duration','takenby','tot_seats','rem_seats','start_date','end_date','owner')
+class EnrolledSessionSerializerForView(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
+    sessionid = serializers.ReadOnlyField(source = 'course.id')
+    courseid = serializers.ReadOnlyField(source = 'course.course.id')
+    coursename = serializers.ReadOnlyField(source = 'course.course.name')
+    credit = serializers.ReadOnlyField(source = 'course.course.credit')
+    duration = serializers.ReadOnlyField(source = 'course.course.duration')
+    takenby=serializers.ReadOnlyField(source = 'course.taken_by.name')
+    category = serializers.ReadOnlyField(source = 'course.course.category.name')
+    start_date= serializers.ReadOnlyField(source = 'course.start_date')
+    end_date= serializers.ReadOnlyField(source = 'course.end_date')
+    enrolledby=serializers.ReadOnlyField(source = 'enrolled_by.name')
     class Meta:
         model = Enrolled_Session
-        fields = ('id','enrolled_by','course','owner')
+        fields = ('id','sessionid','courseid','coursename','category','credit','duration','start_date','end_date','takenby','enrolledby','owner')
+
+class EnrolledSessionSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
+
+    class Meta:
+        model = Enrolled_Session
+        fields = ('id','course','enrolled_by','owner')
                  

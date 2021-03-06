@@ -42,6 +42,7 @@ urlpatterns = [
     path('core/courses/<int:pk>/', views.CourseDetail.as_view()), #details view - all courses (with/wihtout filters)
     
     path('core/mysessions/', views.MyCourseSessionList.as_view()), #list view- sessions taken by logged in faculties
+    path('core/mysessions/<int:pk>/', views.MyCourseSessionDetails.as_view()),
 
     path('core/enrolledsessions/', views.EnrolledSession.as_view()), #list view - all sessions (with/without filters)
     path('core/enrolledsessions/<int:pk>/', views.EnrolledSessionDetail.as_view()), #list view - all sessions (with/without filters)

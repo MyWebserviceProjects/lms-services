@@ -16,7 +16,8 @@ from .permissions import IsOwnerOrReadOnly,IsOwnerOnly,IsAdminOrReadOnly,IsAdmin
 
 from django.contrib.auth.models import User, Group
 from .models import Student,Faculty,Category,Course,Course_Session,Enrolled_Session
-from .serializers import UserSerializer,GroupSerializer,StudentSerializer,FacultySerializer,CategorySerializer,CourseSerializer,CourseSessionSerializer,EnrolledSessionSerializer
+from .serializers import UserSerializer,GroupSerializer,StudentSerializer,FacultySerializer
+from .serializers import CourseSessionSerializerForView,CategorySerializer,CourseSerializer,CourseSessionSerializer,EnrolledSessionSerializer,EnrolledSessionSerializerForView
 from django.http import HttpResponse
 
 class HttpResponseNoContent(HttpResponse):
@@ -109,8 +110,8 @@ class CourseDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class MyCourseSessionList(generics.ListAPIView):
     #queryset = Course_Session.objects.all()
-    serializer_class = CourseSessionSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    serializer_class = CourseSessionSerializerForView
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly]
 
     def get_queryset(self):
         """
@@ -122,10 +123,26 @@ class MyCourseSessionList(generics.ListAPIView):
         if exp_courseid is not None:
             queryset = queryset.filter(course=exp_courseid)
         return queryset
+class MyCourseSessionDetails(generics.RetrieveUpdateDestroyAPIView):
+     queryset = Course_Session.objects.all()
+     def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return CourseSessionSerializerForView
+            #return EnrolledSessionSerializer
+        else:
+            return CourseSessionSerializer
+     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
 class CourseSessionFilterList(generics.ListCreateAPIView):
     #queryset = Course_Session.objects.all()
     serializer_class = CourseSessionSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return CourseSessionSerializerForView
+            #return EnrolledSessionSerializer
+        if self.request.method == 'POST':
+            return CourseSessionSerializer
     def perform_create(self, serializer):
      serializer.save(owner=self.request.user)
     def get_queryset(self):
@@ -133,12 +150,10 @@ class CourseSessionFilterList(generics.ListCreateAPIView):
 		This view should return a list of all the payments for the currently authenticated user.
 	"""
         queryset= Course_Session.objects.all()
-        exp_sessionid = self.request.query_params.get('id', None)
+    
         exp_courseid = self.request.query_params.get('courseid', None)
         exp_takenby = self.request.query_params.get('takenby', None)
         exp_rem_seats = self.request.query_params.get('remseats', None)
-        if exp_sessionid is not None:
-            queryset = queryset.filter(id=exp_sessionid)
         if exp_courseid is not None:
             queryset = queryset.filter(course=exp_courseid)
         if exp_takenby is not None:
@@ -149,15 +164,67 @@ class CourseSessionFilterList(generics.ListCreateAPIView):
 
     
 class CourseSessionDetail(generics.RetrieveUpdateDestroyAPIView):
+    
     queryset = Course_Session.objects.all()
-    serializer_class = CourseSessionSerializer
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return CourseSessionSerializerForView
+            #return EnrolledSessionSerializer
+        else:
+            return CourseSessionSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 #**********************************************
 
 
+class EnrolledSession(generics.ListCreateAPIView):
+    #queryset = Enrolled_Session.objects.all()
+    
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return EnrolledSessionSerializerForView
+            #return EnrolledSessionSerializer
+        if self.request.method == 'POST':
+            return EnrolledSessionSerializer
+    def perform_create(self, serializer):
+     serializer_class = EnrolledSessionSerializer
+     serializer.save(owner=self.request.user)
+    def get_queryset(self):
+        """
+        This view should return a list of all the payments for the currently authenticated user.
+        """
+
+        serializer_class = EnrolledSessionSerializer
+        queryset= Enrolled_Session.objects.all()
+     
+        exp_sessionid = self.request.query_params.get('sessionid', None)
+        exp_enrolledby = self.request.query_params.get('enrolledby', None)
+        exp_course = self.request.query_params.get('courseid', None)
+        exp_category = self.request.query_params.get('categoryid', None)
+        exp_credit = self.request.query_params.get('credit', None)
+        exp_takenby = self.request.query_params.get('takenby', None)
+        if exp_sessionid is not None:
+            queryset = queryset.filter(course=exp_sessionid)
+        if exp_enrolledby is not None:
+            queryset = queryset.filter(enrolled_by=exp_enrolledby)
+        if exp_course is not None:
+            queryset = queryset.filter(course__course=exp_course)
+        if exp_category is not None:
+            queryset = queryset.filter(course__course__category=exp_category)
+        if exp_credit is not None:
+            queryset = queryset.filter(course__course__credit=exp_credit)
+        if exp_takenby is not None:
+            queryset = queryset.filter(course__taken_by=exp_takenby)
+        return queryset
+class EnrolledSessionDetail(generics.RetrieveDestroyAPIView):
+    queryset = Enrolled_Session.objects.all()
+    serializer_class = EnrolledSessionSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
 class MyEnrolledSessionList(generics.ListAPIView):
     #queryset = Enrolled_Session.objects.all()
-    serializer_class = EnrolledSessionSerializer
+    serializer_class = EnrolledSessionSerializerForView
+    #serializer_class = EnrolledSessionSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly]
   
     def get_queryset(self):
@@ -165,37 +232,28 @@ class MyEnrolledSessionList(generics.ListAPIView):
         This view should return a list of all the payments for the currently authenticated user.
         """
         user = self.request.user
-        return Enrolled_Session.objects.filter(owner=user)
-
-class EnrolledSession(generics.ListCreateAPIView):
-    #queryset = Enrolled_Session.objects.all()
-    serializer_class = EnrolledSessionSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    def perform_create(self, serializer):
-     serializer.save(owner=self.request.user)
-    def get_queryset(self):
-        """
-        This view should return a list of all the payments for the currently authenticated user.
-        """
-        queryset= Enrolled_Session.objects.all()
-        exp_id = self.request.query_params.get('id', None)
+        queryset= Enrolled_Session.objects.filter(owner=user)
         exp_sessionid = self.request.query_params.get('sessionid', None)
-        exp_enrolledby = self.request.query_params.get('enrolledby', None)
-        if exp_id is not None:
-            queryset = queryset.filter(id=exp_id)
+        
+        exp_course = self.request.query_params.get('courseid', None)
+        exp_category = self.request.query_params.get('categoryid', None)
+        exp_credit = self.request.query_params.get('credit', None)
+        exp_takenby = self.request.query_params.get('takenby', None)
         if exp_sessionid is not None:
             queryset = queryset.filter(course=exp_sessionid)
-        if exp_enrolledby is not None:
-            queryset = queryset.filter(enrolled_by=exp_enrolledby)
+        if exp_course is not None:
+            queryset = queryset.filter(course__course=exp_course)
+        if exp_category is not None:
+            queryset = queryset.filter(course__course__category=exp_category)
+        if exp_credit is not None:
+            queryset = queryset.filter(course__course__credit=exp_credit)
+        if exp_takenby is not None:
+            queryset = queryset.filter(course__taken_by=exp_takenby)
         return queryset
-class EnrolledSessionDetail(generics.RetrieveDestroyAPIView):
-    queryset = Enrolled_Session.objects.all()
-    serializer_class = EnrolledSessionSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-class MyEnrolledSessionDetail(generics.DestroyAPIView):
+class MyEnrolledSessionDetail(generics.RetrieveDestroyAPIView):
     queryset = Enrolled_Session.objects.all()
-    serializer_class = EnrolledSessionSerializer
+    serializer_class = EnrolledSessionSerializerForView
     permission_classes = [permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly]
 #**********************************************  
 
