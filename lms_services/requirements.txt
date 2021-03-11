@@ -1,0 +1,4 @@
+pip3 install djangorestframework
+pip3 install django-cors-headers
+pip3 install django-rest-swagger
+pip3 install pyyaml

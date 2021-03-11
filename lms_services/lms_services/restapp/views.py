@@ -15,9 +15,10 @@ from rest_framework.views import APIView
 from .permissions import IsOwnerOrReadOnly,IsOwnerOnly,IsAdminOrReadOnly,IsAdminOnly,IsFacultyAdminOrReadOnly,IsFacultyOrReadOnly,IsFacultyOnly,IsStudentOnly,IsStudentOrReadOnly
 
 from django.contrib.auth.models import User, Group
-from .models import Student,Faculty,Category,Course,Course_Session,Enrolled_Session
+from .models import Student,Faculty,Category,Course,Course_Session,Enrolled_Session,Topic,Module,EvaluationType,Evaluation
 from .serializers import UserSerializer,GroupSerializer,StudentSerializer,FacultySerializer
 from .serializers import CourseSessionSerializerForView,CategorySerializer,CourseSerializer,CourseSessionSerializer,EnrolledSessionSerializer,EnrolledSessionSerializerForView
+from .serializers import EvaluationTypeSerializer,TopiceSerializer,ModuleSerializer,EvaluationSerializer
 from django.http import HttpResponse
 
 class HttpResponseNoContent(HttpResponse):
@@ -47,6 +48,7 @@ class StudentDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
 #**********************************************
 class FacultyList(generics.ListCreateAPIView):
     queryset = Faculty.objects.all()
@@ -131,7 +133,7 @@ class MyCourseSessionDetails(generics.RetrieveUpdateDestroyAPIView):
             #return EnrolledSessionSerializer
         else:
             return CourseSessionSerializer
-     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+     permission_classes = [permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly]
 
 class CourseSessionFilterList(generics.ListCreateAPIView):
     #queryset = Course_Session.objects.all()
@@ -194,7 +196,7 @@ class EnrolledSession(generics.ListCreateAPIView):
         This view should return a list of all the payments for the currently authenticated user.
         """
 
-        serializer_class = EnrolledSessionSerializer
+        serializer_class = EnrolledSessionSerializerForView
         queryset= Enrolled_Session.objects.all()
      
         exp_sessionid = self.request.query_params.get('sessionid', None)
@@ -257,3 +259,62 @@ class MyEnrolledSessionDetail(generics.RetrieveDestroyAPIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly]
 #**********************************************  
 
+class TopicList(generics.ListCreateAPIView):
+    queryset = Topic.objects.all()
+    serializer_class = TopiceSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
+    
+class TopicDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Topic.objects.all()
+    serializer_class = TopiceSerializer
+    
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
+#**********************************************
+class EvaluationTypeList(generics.ListCreateAPIView):
+    queryset = EvaluationType.objects.all()
+    serializer_class = EvaluationTypeSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
+class EvaluationTypeDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = EvaluationType.objects.all()
+    serializer_class = EvaluationTypeSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
+#**********************************************
+class ModuleList(generics.ListCreateAPIView):
+    queryset = Module.objects.all()
+    serializer_class = ModuleSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    def get_queryset(self):
+        """
+        This view should return a list of all the payments for the currently authenticated user.
+        """
+
+        queryset = Module.objects.all()
+        exp_course = self.request.query_params.get('courseid', None)
+       
+      
+        if exp_course is not None:
+            queryset = queryset.filter(course=exp_course)
+        
+        return queryset
+    
+class ModuleDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Module.objects.all()
+    serializer_class = ModuleSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
+#**********************************************
+class EvaluationList(generics.ListCreateAPIView):
+    queryset = Evaluation.objects.all()
+    serializer_class = EvaluationSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
+class EvaluationDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Evaluation.objects.all()
+    serializer_class = EvaluationSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
+#**********************************************

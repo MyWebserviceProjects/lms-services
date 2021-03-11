@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Student,Faculty,Category,Course,Course_Session,Enrolled_Session
+from .models import Student,Faculty,Category,Course,Course_Session,Enrolled_Session,Topic,Module,EvaluationType,Evaluation
 
 #admin.site.register(Role)
 #admin.site.register(User)
@@ -73,8 +73,24 @@ class Enrolled_SessionAdmin(admin.ModelAdmin):
     get_coursecategory.short_description = 'Course Category'  #Renames column head
     get_facultyname.short_description = 'Faculty Name'  #Renames column head
     get_userName.short_description = 'Student Name'  #Renames column head
+    pass
 
-
+class TopicAdmin(admin.ModelAdmin):
+    list_display=('id','name')
+    
+    pass
+class ModuleAdmin(admin.ModelAdmin):
+    list_display=('id', 'name', 'desc','get_topics')
+  
+    def get_topics(self,obj):
+        return obj.topics.name
+    
+    pass
+class EvaluationTypeAdmin(admin.ModelAdmin):
+    list_display=('id','name')
+    pass
+class  EvaluationAdmin(admin.ModelAdmin):
+    list_display=('id', 'course', 'evaluationtype','maxmarks','questions','start_time','end_time')
     pass
 
 #admin.site.register(Role,RoleAdmin)
@@ -85,3 +101,8 @@ admin.site.register(Category,CategoryAdmin)
 admin.site.register(Course,CourseAdmin)
 admin.site.register(Course_Session,Course_SessionAdmin)
 admin.site.register(Enrolled_Session,Enrolled_SessionAdmin)
+admin.site.register(Topic,TopicAdmin)
+admin.site.register(Module,ModuleAdmin)
+admin.site.register(EvaluationType,EvaluationTypeAdmin)
+admin.site.register(Evaluation,EvaluationAdmin)
+

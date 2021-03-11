@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 from rest_framework import serializers
-from .models import Student,Faculty,Category,Course,Course_Session,Enrolled_Session
+from .models import Student,Faculty,Category,Course,Course_Session,Enrolled_Session,Topic,Module,EvaluationType,Evaluation
 class GroupSerializer(serializers.ModelSerializer):
     #students = serializers.PrimaryKeyRelatedField(many=True, queryset=User.objects.all())
     #faculties = serializers.PrimaryKeyRelatedField(many=True, queryset=User.objects.all())
@@ -49,9 +49,11 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ('id','name')
 class CourseSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
+    #modules=serializers.PrimaryKeyRelatedField(many=True, queryset=Module.objects.all())
     class Meta:
         model = Course
-        fields = ('id','category','name','credit','duration','owner')
+        fields = ('id','category','name','credit','duration','modules','owner')
+        #fields = ('id','category','name','credit','duration','owner')
 class CourseSessionSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
     class Meta:
@@ -76,13 +78,15 @@ class EnrolledSessionSerializerForView(serializers.ModelSerializer):
     credit = serializers.ReadOnlyField(source = 'course.course.credit')
     duration = serializers.ReadOnlyField(source = 'course.course.duration')
     takenby=serializers.ReadOnlyField(source = 'course.taken_by.name')
+    facultyid=serializers.ReadOnlyField(source = 'course.taken_by.id')
     category = serializers.ReadOnlyField(source = 'course.course.category.name')
     start_date= serializers.ReadOnlyField(source = 'course.start_date')
     end_date= serializers.ReadOnlyField(source = 'course.end_date')
     enrolledby=serializers.ReadOnlyField(source = 'enrolled_by.name')
+    studentid=serializers.ReadOnlyField(source = 'enrolled_by.id')
     class Meta:
         model = Enrolled_Session
-        fields = ('id','sessionid','courseid','coursename','category','credit','duration','start_date','end_date','takenby','enrolledby','owner')
+        fields = ('id','sessionid','courseid','coursename','category','credit','duration','start_date','end_date','facultyid','takenby','studentid','enrolledby','owner')
 
 class EnrolledSessionSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
@@ -91,3 +95,21 @@ class EnrolledSessionSerializer(serializers.ModelSerializer):
         model = Enrolled_Session
         fields = ('id','course','enrolled_by','owner')
                  
+class EvaluationTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EvaluationType
+        fields = ('id','name')
+class TopiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Topic
+        fields = ('id','name')
+class ModuleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Module
+        fields = ('id','name','desc','topics')
+
+class EvaluationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Evaluation
+        fields = ('id','course','evaluationtype','maxmarks','questions','start_time','end_time')
+

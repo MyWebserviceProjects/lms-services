@@ -57,7 +57,18 @@ urlpatterns = [
     path('core/sessions/', views.CourseSessionFilterList.as_view()), #list view - all sessions (with/without filters)
     path('core/sessions/<int:pk>/', views.CourseSessionDetail.as_view()), #details view - edit by logged in user
 
+    path('core/topics/', views.TopicList.as_view()),
+    path('core/topics/<int:pk>/', views.TopicDetail.as_view()),
 
+    path('core/evaluationtypes/', views.EvaluationTypeList.as_view()),
+    path('core/evaluationtypes/<int:pk>/', views.EvaluationTypeDetail.as_view()),
+
+    path('core/evaluations/', views.EvaluationList.as_view()),
+    path('core/evaluations/<int:pk>/', views.EvaluationDetail.as_view()), 
+
+    path('core/modules/', views.ModuleList.as_view()),
+    path('core/modules/<int:pk>/', views.ModuleDetail.as_view()),
+    
     path(r'docs/', include_docs_urls(title='LMS API')),
     
 

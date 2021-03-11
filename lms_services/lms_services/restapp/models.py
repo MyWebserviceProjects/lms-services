@@ -63,6 +63,8 @@ class Course(models.Model):
     name=models.CharField(max_length=200,unique=True, help_text='Enter course name')
     credit=models.IntegerField(validators=[MaxValueValidator(10),MinValueValidator(1)],help_text='Enter credit score')
     duration=models.IntegerField(validators=[MinValueValidator(1)],help_text='Enter course duration')
+    modules=models.ManyToManyField('Module' ,null=True, help_text='Enter Modules ')
+
     owner = models.ForeignKey('auth.User', related_name='courses_created', null=True,on_delete=models.CASCADE)
     class Meta:
         ordering = ['category']
@@ -100,7 +102,7 @@ class Course_Session(models.Model):
         return True
 
 class Enrolled_Session(models.Model):
-    enrolled_by=models.ForeignKey('Student',on_delete=models.CASCADE, help_text='Enter User ')
+    enrolled_by=models.ForeignKey('Student',related_name='enrolled',on_delete=models.CASCADE, help_text='Enter User ')
     course=models.ForeignKey('Course_Session',on_delete=models.CASCADE, help_text='Enter Course Session ')
     owner = models.ForeignKey('auth.User', related_name='courses_enrolled', null=True,on_delete=models.CASCADE)
 
@@ -110,4 +112,56 @@ class Enrolled_Session(models.Model):
     def __str__(self):
         """String for representing the Model object."""
         return self.course.course.name
+
+class Topic(models.Model):
+    name= models.TextField(unique=True,help_text='Enter Topic')
+    class Meta:
+        ordering = ['id']
+    def get_absolute_url(self):
+        """Returns the url to access a detail record for this customer."""
+        return reverse('Topic-detail', args=[str(self.id)])
+    def __str__(self):
+        """String for representing the Model object."""
+        return self.name
+
+class Module(models.Model):
+   
+    name= models.CharField(max_length=500,null=True, unique=True,help_text='Enter moudule name')
+    desc= models.TextField( null=True,help_text='Enter moudule description')
+    topics=models.ManyToManyField('Topic' ,null=True, help_text='Enter Topic ')
+    class Meta:
+        ordering = ['id']
+    def get_absolute_url(self):
+        """Returns the url to access a detail record for this customer."""
+        return reverse('Module-detail', args=[str(self.id)])
+    def __str__(self):
+        """String for representing the Model object."""
+        return self.name
+    
+class EvaluationType(models.Model):
+    name= models.CharField(max_length=200, unique=True,help_text='Enter Evaluation Type')
+    class Meta:
+        ordering = ['id']
+    def get_absolute_url(self):
+        """Returns the url to access a detail record for this customer."""
+        return reverse('EvaluationType-detail', args=[str(self.id)])
+    def __str__(self):
+        """String for representing the Model object."""
+        return self.name
+
+class Evaluation(models.Model):
+    course=models.ForeignKey('Course_Session',on_delete=models.CASCADE, help_text='Enter Course Session ')
+    evaluationtype=models.ForeignKey('EvaluationType',on_delete=models.CASCADE, help_text='Enter Evaluation Type')
+    maxmarks=models.IntegerField(validators=[MaxValueValidator(100)],help_text='Enter Maximum marks')
+    questions=models.IntegerField(validators=[MaxValueValidator(50)],help_text='Enter  number of questions')
+    start_time=models.DateTimeField(help_text='Enter  Start Date/Time')
+    end_time=models.DateTimeField(help_text='Enter end Date/Time')
+    class Meta:
+        ordering = ['id']
+    def get_absolute_url(self):
+        """Returns the url to access a detail record for this customer."""
+        return reverse('Evaluation-detail', args=[str(self.id)])
+    def __int__(self):
+        """String for representing the Model object."""
+        return self.id
     
